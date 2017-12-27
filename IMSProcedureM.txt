@@ -1,0 +1,70 @@
+create table Students (StudentID int primary key identity(100,1), StudentName varchar(30), DOB date);
+create table Courses (CourseID int primary key identity(200,1), CourseName varchar(30));
+create table Institutes (InstituteID int primary key identity(300,1), InstituteName varchar(30));
+create table Admissions (AdmissionID int primary key identity(400,1), AdmissionDate date, studentid int references Students(StudentID), courseid int references Courses(CourseID), instituteid int references Institutes(InstituteID));
+
+DROP TABLE Admissions;
+DROP TABLE Institutes;
+go
+alter procedure [dbo].[addAdmission]
+(
+	@admissionid int out,
+	@studentid int out,
+	@courseid int out,
+	@instituteid int out,
+	@studentname varchar(30),
+	@Coursename varchar(30),
+	@Institutename varchar(30),
+	@dateofbirth date
+)
+As
+Begin
+if not exists( Select * from Admissions)
+		set @admissionid = 400;
+	else
+		set @admissionid = (Select Top 1 AdmissionID from Admissions Order By AdmissionID desc) + 1;
+	if not exists( Select * from Students)
+
+	Begin
+		set @studentid = 100;
+		Insert into Students values(@studentname,@dateofbirth);
+	End
+
+	else if not exists(Select * from Students where @studentname = StudentName)
+		
+		Begin
+			Insert into Students values(@studentname,@dateofbirth);
+			set @studentid = (Select StudentID from Students where @studentname = StudentName);
+		End
+	
+	else
+	
+	set @studentid = (Select StudentID from Students where @studentname = StudentName);
+	set @courseid = (Select CourseID from Courses where @Coursename=CourseName);
+	set @instituteid = (Select InstituteID from Institutes where @Institutename=InstituteName);
+	
+	Insert into Admissions values(GETDATE(),@studentid,@courseid,@instituteid);
+	
+	
+End
+
+
+go
+create procedure [dbo].[discourse]
+as
+select CourseName from Courses;
+
+go
+alter procedure [dbo].[disinstitute]
+as
+select InstituteName from Institutes;
+
+
+insert into Courses values('DOT NET');
+
+
+insert into Courses values('JAVA');
+
+insert into Institutes values('IEM');
+insert into Institutes values('GNIT');
+select * from Institutes;
