@@ -1,0 +1,21 @@
+create table CUSTOMERSS(customer_id int primary key identity(2000,1), customer_name varchar(20), address varchar(50), idDoc varchar(25));
+select * from CUSTOMERSS;
+create table BOOKING(booking_id int primary key identity(5000,1),hotel_id int,Customer_id int references CUSTOMERSS(customer_id),datein date,dateout date,room_type varchar(40));
+select * from BOOKING;
+
+go
+create procedure [dbo].[addCustomer]
+(
+@customername varchar(20),
+@address varchar(50),
+@idDoc varchar(25),
+@datein date,
+@dateout date,
+@roomtype varchar(40),
+@hotelid int
+)
+AS
+BEGIN
+insert into CUSTOMERSS values(@customername,@address,@idDoc)
+insert into BOOKING values(@hotelid,(select customer_id from CUSTOMERSS where customer_name=@customername),@datein,@dateout,@roomtype)
+END
